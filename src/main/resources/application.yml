@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: ai-assistant
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ai_assistant_db
+    username: ai_assistant_user
+    password: ${DB_PASSWORD:securepassword}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+  cloud:
+    aws:
+      region:
+        static: us-east-1
+      credentials:
+        access-key: ${AWS_ACCESS_KEY_ID:default}
+        secret-key: ${AWS_SECRET_ACCESS_KEY:default}
+      sqs:
+        endpoint: ${AWS_SQS_ENDPOINT:https://sqs.us-east-1.amazonaws.com}
+
+ai-assistant:
+  evaluation-threshold: 0.7
+  max-concurrent-evaluations: 10
+  core-pool-size: 5
+  max-pool-size: 10
+  queue-capacity: 100
+  evaluation-queue: ai-assistant-evaluation-queue
+  integration-queue: ai-assistant-integration-queue
+  github-copilot:
+    api-url: https://api.github.com/copilot
+    timeout: 5000
+  amazon-q-dev:
+    api-url: https://q.amazonaws.com/dev
+    timeout: 5000
+  kiro:
+    api-url: https://api.kiro.ai
+    timeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
